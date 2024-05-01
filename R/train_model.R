@@ -464,10 +464,6 @@ split_patient_data <- function(training_data, patient_id_column, split_ratio = 0
     stop("The specified patient_id_column does not exist in the dataset")
   }
 
-  # Preprocess to extract the part of qname before the first underscore
-  training_data$data <- training_data$data %>%
-    mutate(derived_patient_id = sub("_.*", "", !!sym(patient_id_column)))
-
   # Extract unique patient identifiers
   patient_ids <- unique(training_data$data$derived_patient_id)
 
