@@ -2,6 +2,7 @@
 #' Train error model
 #'
 #' @param training_data \code{data.frame} Input training data (Generated from [get_training_data()])
+#' @param validation_data \code{data.frame} Input validation data (Generated from [get_training_data()])
 #' @param layers Numeric vector. Number of nodes in each layer.
 #' @param model_features Vector of feature names. Selected features for model training.
 #' @param lr Numeric value between 0 and 1. Learning rate.
@@ -21,11 +22,12 @@
 #' @export
 #' @family Train model
 #' @seealso [get_training_data()] Function for getting training data
-train_dreams_model <- function(training_data, layers,
+train_dreams_model <- function(training_data, validation_data = NULL, layers,
                         model_features, lr, batch_size, epochs,
                         model_file_path = NULL, log_file_path = NULL,
                         min_delta = 0, patience = 0, l2_reg = 0,
                         validation_split = 0, ctx3_embed_dim = 3) {
+
   training_data <- training_data$data %>%
     filter(.data$obs %in% c("A", "T", "C", "G"))
 
@@ -33,6 +35,15 @@ train_dreams_model <- function(training_data, layers,
     training_data = training_data,
     model_features = model_features
   )
+
+  if (!is.null(validation_data)){
+    validation_data <- validation_data$data %>%
+      filter(.data$obs %in% c("A", "T", "C", "G"))
+    validation_data <- prepare_training_data(
+      training_data = validation_data,
+      model_features = model_features)
+    validation_data = list(validation_data$feature, validation_data$labels)
+  }
 
   prepared_input <- prepare_input_layer(training_data$features,
     ctx3_embed_dim = ctx3_embed_dim
@@ -48,6 +59,7 @@ train_dreams_model <- function(training_data, layers,
   model <- fit_model(
     features = training_data$features,
     labels = training_data$labels,
+    validation_data = validation_data,
     input_structure = model_structure,
     lr = lr,
     batch_size = batch_size,
@@ -292,6 +304,7 @@ generate_NN_structure <- function(inputs, input_layer, layers, reg = 0) {
 #'
 #' @param features input features
 #' @param labels input labels
+#' @param validation_data list of validation features and labels
 #' @param input_structure input structure
 #' @param lr learning rate
 #' @param batch_size batch size
@@ -309,7 +322,10 @@ generate_NN_structure <- function(inputs, input_layer, layers, reg = 0) {
 #' @importFrom R6 R6Class
 
 
-fit_model <- function(features, labels, input_structure,
+fit_model <- function(features,
+                      labels,
+                      validation_data,
+                      input_structure,
                       lr,
                       batch_size,
                       epochs,
@@ -412,6 +428,7 @@ fit_model <- function(features, labels, input_structure,
   model %>% keras::fit(
     x = features,
     y = labels,
+    validation_data = validation_data,
     validation_split = validation_split,
     epochs = epochs,
     batch_size = batch_size,
@@ -420,4 +437,54 @@ fit_model <- function(features, labels, input_structure,
   )
 
   return(model)
+}
+
+
+#' Split Patient Data Into Training and Validation Sets
+#'
+#' This function splits a dataset into training and validation sets based on a unique patient identifier.
+#' It ensures that all records for a given patient are included entirely in either the training set or
+#' the validation set, thereby preventing data leakage.
+#'
+#' @param training_data A list containing at least a `data` dataframe and an `info` object.
+#'        The `data` dataframe must contain a column specified by `patient_id_column`.
+#' @param patient_id_column A string specifying the column name in `data` that contains the patient identifiers.
+#'        This column is used to split the data into training and validation sets.
+#' @param split_ratio A numeric value between 0 and 1 indicating the proportion of the data to be used for training.
+#'        The default is 0.8, meaning 80% of the data is used for training and 20% for validation.
+#' @return A list with two elements: `train_data` and `validation_data`.
+#'         Each element is a list containing `data` and `info`, where `data` includes the respective split
+#'         of the original `data` dataframe, and `info` contains the unchanged `info` from `training_data`.
+
+#' @export
+
+split_patient_data <- function(training_data, patient_id_column, split_ratio = 0.8) {
+  # Validate that the patient_id_column exists in the data
+  if (!patient_id_column %in% names(training_data$data)) {
+    stop("The specified patient_id_column does not exist in the dataset")
+  }
+
+  # Preprocess to extract the part of qname before the first underscore
+  training_data$data <- training_data$data %>%
+    mutate(derived_patient_id = sub("_.*", "", !!sym(patient_id_column)))
+
+  # Extract unique patient identifiers
+  patient_ids <- unique(training_data$data$derived_patient_id)
+
+  # Sample a subset of patient_ids for training
+  train_patient_ids <- sample(patient_ids, size = length(patient_ids) * split_ratio)
+
+  # Split the data into training and validation sets
+  train_data <- list(
+    data = training_data$data[training_data$data$derived_patient_id %in% train_patient_ids, ],
+    info = training_data$info
+  )
+
+  validation_data <- list(
+    data = training_data$data[!training_data$data$derived_patient_id %in% train_patient_ids, ],
+    info = training_data$info
+  )
+
+  # Return a list containing both the training and validation datasets
+  return(list(train_data = train_data, validation_data = validation_data))
 }
