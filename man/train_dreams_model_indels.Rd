@@ -6,6 +6,7 @@
 \usage{
 train_dreams_model_indels(
   training_data,
+  validation_data = NULL,
   layers,
   model_features,
   lr,

@@ -7,6 +7,7 @@
 fit_model_indels(
   features,
   labels,
+  validation_data,
   input_structure,
   lr,
   batch_size,

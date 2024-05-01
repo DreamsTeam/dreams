@@ -6,6 +6,7 @@
 \usage{
 train_dreams_model(
   training_data,
+  validation_data = NULL,
   layers,
   model_features,
   lr,
@@ -22,6 +23,8 @@ train_dreams_model(
 }
 \arguments{
 \item{training_data}{\code{data.frame} Input training data (Generated from \code{\link[=get_training_data]{get_training_data()}})}
+
+\item{validation_data}{\code{data.frame} Input validation data (Generated from \code{\link[=get_training_data]{get_training_data()}})}
 
 \item{layers}{Numeric vector. Number of nodes in each layer.}
 

@@ -7,6 +7,7 @@
 fit_model(
   features,
   labels,
+  validation_data,
   input_structure,
   lr,
   batch_size,
@@ -22,6 +23,8 @@ fit_model(
 \item{features}{input features}
 
 \item{labels}{input labels}
+
+\item{validation_data}{list of validation features and labels}
 
 \item{input_structure}{input structure}
 

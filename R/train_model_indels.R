@@ -29,7 +29,7 @@
 #' @export
 #' @family Train model
 #' @seealso [get_training_data()] Function for getting training data
-train_dreams_model_indels <- function(training_data, layers,
+train_dreams_model_indels <- function(training_data, validation_data = NULL, layers,
                         model_features, lr, batch_size, epochs,
                         model_file_path = NULL, log_file_path = NULL,
                         min_delta = 0, patience = 0, l2_reg = 0,
@@ -41,6 +41,15 @@ train_dreams_model_indels <- function(training_data, layers,
     training_data = training_data,
     model_features = model_features
   )
+
+  if (!is.null(validation_data)){
+    validation_data <- validation_data$data %>%
+      filter(.data$obs %in% c("A", "T", "C", "G"))
+    validation_data <- prepare_training_data(
+      training_data = validation_data,
+      model_features = model_features)
+    validation_data = list(validation_data$feature, validation_data$labels)
+  }
 
   prepared_input <- prepare_input_layer_indels(training_data$features,
     ctx3_embed_dim = ctx3_embed_dim
@@ -56,6 +65,7 @@ train_dreams_model_indels <- function(training_data, layers,
   model <- fit_model_indels(
     features = training_data$features,
     labels = training_data$labels,
+    validation_data = validation_data,
     input_structure = model_structure,
     lr = lr,
     batch_size = batch_size,
@@ -345,15 +355,18 @@ generate_NN_structure_indels <- function(inputs, input_layer, layers, reg = 0) {
 #' @importFrom R6 R6Class
 
 
-fit_model_indels <- function(features, labels, input_structure,
-                      lr,
-                      batch_size,
-                      epochs,
-                      min_delta,
-                      patience,
-                      validation_split,
-                      model_file_path,
-                      log_file_path = NULL) {
+fit_model_indels <- function(features,
+                             labels,
+                             validation_data,
+                             input_structure,
+                             lr,
+                             batch_size,
+                             epochs,
+                             min_delta,
+                             patience,
+                             validation_split,
+                             model_file_path,
+                             log_file_path = NULL) {
   model <- input_structure
 
   LogMetrics <- R6::R6Class(
@@ -448,6 +461,7 @@ fit_model_indels <- function(features, labels, input_structure,
   model %>% keras::fit(
     x = features,
     y = labels,
+    validation_data = validation_data,
     validation_split = validation_split,
     epochs = epochs,
     batch_size = batch_size,

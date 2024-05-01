@@ -465,19 +465,19 @@ split_patient_data <- function(training_data, patient_id_column, split_ratio = 0
   }
 
   # Extract unique patient identifiers
-  patient_ids <- unique(training_data$data$derived_patient_id)
+  patient_ids <- unique(training_data$data$patient_id_column)
 
   # Sample a subset of patient_ids for training
   train_patient_ids <- sample(patient_ids, size = length(patient_ids) * split_ratio)
 
   # Split the data into training and validation sets
   train_data <- list(
-    data = training_data$data[training_data$data$derived_patient_id %in% train_patient_ids, ],
+    data = training_data$data[training_data$data$patient_id_column %in% train_patient_ids, ],
     info = training_data$info
   )
 
   validation_data <- list(
-    data = training_data$data[!training_data$data$derived_patient_id %in% train_patient_ids, ],
+    data = training_data$data[!training_data$data$patient_id_column %in% train_patient_ids, ],
     info = training_data$info
   )
 
