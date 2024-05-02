@@ -44,7 +44,7 @@ train_dreams_model_indels <- function(training_data, validation_data = NULL, lay
 
   if (!is.null(validation_data)){
     validation_data <- validation_data$data %>%
-      filter(.data$obs %in% c("A", "T", "C", "G"))
+      filter(.data$obs %in% c("A", "T", "C", "G", "D", "I"))
     validation_data <- prepare_training_data(
       training_data = validation_data,
       model_features = model_features)
