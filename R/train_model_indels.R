@@ -1,8 +1,8 @@
 
 #' Train error model
 #'
-#' @param training_data \code{data.frame} Input training data (Generated from
-#'   [get_training_data()])
+#' @param training_data \code{data.frame} Input training data (Generated from [get_training_data()])
+#' @param validation_data \code{data.frame} Input validation data (Generated from [get_training_data()])
 #' @param layers Numeric vector. Number of nodes in each layer.
 #' @param model_features Vector of feature names. Selected features for model
 #'   training.
@@ -338,6 +338,7 @@ generate_NN_structure_indels <- function(inputs, input_layer, layers, reg = 0) {
 #'
 #' @param features input features
 #' @param labels input labels
+#' @param validation_data validation data
 #' @param input_structure input structure
 #' @param lr learning rate
 #' @param batch_size batch size

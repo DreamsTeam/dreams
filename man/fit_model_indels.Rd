@@ -24,6 +24,8 @@ fit_model_indels(
 
 \item{labels}{input labels}
 
+\item{validation_data}{validation data}
+
 \item{input_structure}{input structure}
 
 \item{lr}{learning rate}
