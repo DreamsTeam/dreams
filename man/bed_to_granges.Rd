@@ -7,7 +7,7 @@
 bed_to_granges(bed_path)
 }
 \arguments{
-\item{bed_pathA}{A string specifying the path to the BED file to be converted.}
+\item{bed_path}{A string specifying the path to the BED file to be converted.}
 }
 \value{
 A GRanges object representing the genomic intervals from the BED file.

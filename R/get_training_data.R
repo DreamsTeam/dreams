@@ -251,7 +251,7 @@ filter_mismatch_positions <- function(read_positions, bam_file, mm_rate_max = 1,
 #' (like regions of the genome associated with certain features or annotations) and are formatted in a specific way.
 #' The function adjusts for the zero-based indexing of BED format to the one-based indexing used in GRanges.
 #'
-#' @param bed_pathA A string specifying the path to the BED file to be converted.
+#' @param bed_path A string specifying the path to the BED file to be converted.
 #' @return A GRanges object representing the genomic intervals from the BED file.
 #' @keywords internal
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
