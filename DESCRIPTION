@@ -21,9 +21,9 @@ Description: DREAMS is an analysis pipeline that applies a neural network to low
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
 biocViews:
 Imports: 
-    R (>= 4.1.3),
     dplyr,
     GenomicRanges,
     IRanges,
@@ -52,4 +52,4 @@ Config/testthat/edition: 3
 URL: https://github.com/JakobSkouPedersenLab/dreams
 BugReports: https://github.com/JakobSkouPedersenLab/dreams/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+
