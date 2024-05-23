@@ -39,9 +39,9 @@ Imports:
     parallel,
     doParallel,
     foreach,
-    turboEM,
     reticulate
-Suggests: 
+Suggests:
+    turboEM,
     knitr,
     covr,
     testthat (>= 3.0.0),
