@@ -39,9 +39,11 @@ Imports:
     parallel,
     doParallel,
     foreach,
-    reticulate
+    reticulate,
+    MatrixModels (= 0.5-1),
+    MASS (= 7.3-55)
+    turboEM
 Suggests:
-    turboEM,
     knitr,
     covr,
     testthat (>= 3.0.0),
