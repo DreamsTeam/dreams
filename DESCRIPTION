@@ -40,8 +40,6 @@ Imports:
     doParallel,
     foreach,
     reticulate,
-    MatrixModels (>= 0.5-1),
-    MASS (>= 7.3-55)
     turboEM
 Suggests:
     knitr,
